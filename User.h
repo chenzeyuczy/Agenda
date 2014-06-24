@@ -16,9 +16,7 @@ class User {
   void setEmail(std::string email);
   std::string getPhone();
   void setPhone(std::string phone);
-  
-  static bool emailValid(std::string email);
-  static bool phoneValid(std::string phone);
+  bool isValid(void) const;
 
  private:
   std::string name_;

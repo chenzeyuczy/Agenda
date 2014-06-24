@@ -1,14 +1,17 @@
-#ifndef AGENDACONTROLLER_H
-#define AGENDACONTROLLER_H
+#ifndef AGENDAUI_H
+#define AGENDAUI_H
 
 #include "AgendaService.h"
+#include <iostream>
+#include <string>
 
-class AgendaController {
+class AgendaUI {
  public:
-  AgendaController();
+  AgendaUI();
   void getOperation(void);
 
  private:
+  // task functions
   void startAgenda(void);
   bool executeOperation(std::string op);
   void userLogIn(void);
@@ -26,12 +29,9 @@ class AgendaController {
   void deleteMeetingByTitle(void);
   void deleteAllMeetings(void);
   void printMeetings(std::list<Meeting> meetings);
-  void setPassword(void);
-  void setEmail(void);
-  void setPhone(void);
-  void setParticipator(void);
-  void setStartDate(void);
-  void setEndDate(void);
+  // own functions
+  std::string getCmd(void);
+  // dates
   User *currentUser_;
   AgendaService agendaService_;
 };

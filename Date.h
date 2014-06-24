@@ -1,5 +1,5 @@
-#ifndef Date_H
-#define Date_H
+#ifndef DATE_H
+#define DATE_H
 
 #include <string>
 
