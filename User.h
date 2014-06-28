@@ -8,15 +8,14 @@ class User {
   User();
   User(std::string userName, std::string userPassword,
        std::string userEmail, std::string userPhone);
-  std::string getName();
+  std::string getName() const;
   void setName(std::string name);
-  std::string getPassword();
+  std::string getPassword() const;
   void setPassword(std::string password);
-  std::string getEmail();
+  std::string getEmail() const;
   void setEmail(std::string email);
-  std::string getPhone();
+  std::string getPhone() const;
   void setPhone(std::string phone);
-  bool isValid(void) const;
 
  private:
   std::string name_;

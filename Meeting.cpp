@@ -16,23 +16,23 @@ Meeting::Meeting(std::string sponsor, std::string participator,
   title_ = title;
 }
 
-std::string Meeting::getSponsor(void) {
+std::string Meeting::getSponsor(void) const {
   return sponsor_;
 }
 
-std::string Meeting::getParticipator(void) {
+std::string Meeting::getParticipator(void) const {
   return participator_;
 }
 
-Date Meeting::getStartDate(void) {
+Date Meeting::getStartDate(void) const {
   return startDate_;
 }
 
-Date Meeting::getEndDate(void) {
+Date Meeting::getEndDate(void) const {
   return endDate_;
 }
 
-std::string Meeting::getTitle(void) {
+std::string Meeting::getTitle(void) const {
   return title_;
 }
 

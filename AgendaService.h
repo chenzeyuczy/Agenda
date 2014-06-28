@@ -12,13 +12,13 @@ class AgendaService {
   bool userLogIn(std::string userName, std::string password);
   bool userRegister(std::string userName, std::string password,
                     std::string email, std::string phone);
-  bool deleteUser(User user);
+  bool deleteUser(std::string userName, std::string password);  // a user can only delete itself
   std::list<User> listAllUsers(void);
 
   bool createMeeting(std::string userName, std::string title,
                      std::string participator,
                      std::string startDate, std::string endDate);
-  Meeting* meetingQuery(std::string title);
+  std::list<Meeting> meetingQuery(std::string title);
   std::list<Meeting> meetingQuery(std::string userName, std::string startDate,
                                   std::string endDate);
   std::list<Meeting> listAllMeetings(std::string userName);
@@ -31,7 +31,7 @@ class AgendaService {
   void quitAgenda(void);
 
  private:
-  Storage storage_;
+  Storage *storage_;
   static int serviceRunning_;
 };
 

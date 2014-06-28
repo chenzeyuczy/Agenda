@@ -4,7 +4,7 @@ User::User() {
   name_ = "undefined";
   password_ = "123456";
   email_ = "example@abc.com";
-  phone_ = "18620682135";
+  phone_ = "13800138000";
 }
 
 User::User(std::string userName, std::string userPassword,
@@ -31,22 +31,18 @@ void User::setPhone(std::string phone) {
   phone_ = phone;
 }
 
-std::string User::getName() {
+std::string User::getName() const {
   return name_;
 }
 
-std::string User::getPassword() {
+std::string User::getPassword() const {
   return password_;
 }
 
-std::string User::getEmail() {
+std::string User::getEmail() const {
   return email_;
 }
 
-std::string User::getPhone() {
+std::string User::getPhone() const {
   return phone_;
-}
-
-bool User::isValid(void) const {
-  return true;
 }

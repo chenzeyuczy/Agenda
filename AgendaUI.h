@@ -30,9 +30,18 @@ class AgendaUI {
   void deleteAllMeetings(void);
   void printMeetings(std::list<Meeting> meetings);
   // own functions
+
+  void setPassword();
+  void setEmail();
+  void setPhone();
+  void setParticipator();
+  void setStartDate();
+  void setEndDate();
+
   std::string getCmd(void);
   // dates
-  User *currentUser_;
+  std::string userName_;
+  std::string userPassword_;
   AgendaService agendaService_;
 };
 
