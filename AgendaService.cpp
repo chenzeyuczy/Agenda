@@ -164,7 +164,9 @@ bool AgendaService::deleteAllMeetings(std::string userName) {
     return (count != 0);
 }
 
-void AgendaService::startAgenda(void) {}
+void AgendaService::startAgenda(void) {
+    storage_->getInstance();
+}
 
 void AgendaService::quitAgenda(void) {
     storage_->sync();

@@ -14,6 +14,7 @@ Storage* Storage::getInstance(void) {
   if (!instance_) {
   	instance_ = new Storage();
   }
+  instance_->readFromFile("agenda.data");
   return instance_;
 }
 
@@ -96,70 +97,73 @@ int Storage::deleteMeeting(std::function<bool(const Meeting&)> filter) {
 }
 
 bool Storage::readFromFile(const char *filename) {
-	std::ifstream in(filename, std::ios::in);
-	if (in.good())  {
-		//  Read operations.
-		std::string line, sub;
-		int num;
-		size_t front, back;
-		getline(in, line, '\n');
-		front = line.find_first_of("0123456789");
-		back = line.find_last_of("0123456789");
-		sub = line.substr(front, back - front + 1);
-		num = std::stoi(sub);
-		for (int i = 0; i < num; i++) {
-			std::string userAttr[4];
-			getline(in, line, '\n');
-			for (int j = 0; j < 4; j++) {
-				front = back = 0;
-				front = line.find_first_of("\"", back + 1);
-				back = line.find_first_of("\"", front + 1);
-				userAttr[j] = line.substr(front + 1, back - front - 1);
-			}
-			User temp(userAttr[0], userAttr[1], userAttr[2], userAttr[3]);
-			userList_.push_back(temp);
-		}
-		getline(in, line, '\n');
-		front = line.find_first_of("0123456789");
-		back = line.find_last_of("0123456789");
-		sub = line.substr(front, back - front + 1);
-		num = std::stoi(sub);
-		for (int i = 0; i < num; i++) {
-			std::string meetingAttr[5];
-			getline(in, line, '\n');
-			for (int j = 0; j < 4; j++) {
-				front = back = 0;
-				front = line.find_first_of("\"", back + 1);
-				back = line.find_first_of("\"", front + 1);
-				meetingAttr[j] = line.substr(front + 1, back - front - 1);
-			}
-			Meeting temp(meetingAttr[0], meetingAttr[1], Date::stringToDate(meetingAttr[2]), Date::stringToDate(meetingAttr[3]), meetingAttr[4]);
-			meetingList_.push_back(temp);
-		}
-		in.close();
-		return true;
-	}
-	return false;
+    std::ifstream in(filename, std::ios::in);
+    if (in.good())  {
+        //  Read operations.
+        userList_.clear();
+        meetingList_.clear();
+        std::string line, sub;
+        int num;
+        size_t front, back;
+        getline(in, line, '\n');
+        front = line.find_first_of("0123456789");
+        back = line.find_last_of("0123456789");
+        sub = line.substr(front, back - front + 1);
+        num = std::stoi(sub);
+        for (int i = 0; i < num; i++) {
+            std::string userAttr[4];
+            getline(in, line, '\n');
+            front = back = 0;
+            for (int j = 0; j < 4; j++) {
+                front = line.find_first_of("\"", back + 1);
+                back = line.find_first_of("\"", front + 1);
+                userAttr[j] = line.substr(front + 1, back - front - 1);
+            }
+            User temp(userAttr[0], userAttr[1], userAttr[2], userAttr[3]);
+            userList_.push_back(temp);
+        }
+        getline(in, line, '\n');
+        front = line.find_first_of("0123456789");
+        back = line.find_last_of("0123456789");
+        sub = line.substr(front, back - front + 1);
+        num = std::stoi(sub);
+        for (int i = 0; i < num; i++) {
+            std::string meetingAttr[5];
+            getline(in, line, '\n');
+            front = back = 0;
+            for (int j = 0; j < 4; j++) {
+                front = line.find_first_of("\"", back + 1);
+                back = line.find_first_of("\"", front + 1);
+                meetingAttr[j] = line.substr(front + 1, back - front - 1);
+            }
+            Meeting temp(meetingAttr[0], meetingAttr[1], Date::stringToDate(meetingAttr[2]), Date::stringToDate(meetingAttr[3]), meetingAttr[4]);
+            meetingList_.push_back(temp);
+        }
+        in.close();
+        return true;
+    }
+    return false;
 }
 
 bool Storage::writeToFile(const char *filename) {
-	std::ofstream out(filename, std::ios::trunc);
-	if (out.good()) {
-		//  Write operations.
-		out << "{collection:\"User\",total:" << userList_.size() << "}\n";
-		for (auto i : userList_) {
-			out << "{name:\"" << i.getName() << "\",pwd:\"" << i.getPassword()
-				<< "\",phone:\"" << i.getPhone() << "\"}\n";
-		}
-		out << "{collection:\"Meeting\",total:" << meetingList_.size() << "}\n";
-		for (auto i : meetingList_) {
-			out << "{sponsor:\"" << i.getSponsor() << "\",participator:\""
-				<< i.getParticipator() << "\",sdate:" << Date::dateToString(i.getStartDate())
-				<< "\",edate:\"" << Date::dateToString(i.getEndDate())
-				<< "\",title:\"" << i.getTitle() << "\"}\n";
-		}
-		out.close();
-		return true;
-	}
-	return false;
+    std::ofstream out(filename, std::ios::trunc);
+    if (out.good()) {
+    //  Write operations.
+    out << "{collection:\"User\",total:" << userList_.size() << "}\n";
+    for (auto i : userList_) {
+    out << "{name:\"" << i.getName() << "\",pwd:\"" << i.getPassword()
+        << "\",email:\"" << i.getEmail()
+        << "\",phone:\"" << i.getPhone() << "\"}\n";
+    }
+    out << "{collection:\"Meeting\",total:" << meetingList_.size() << "}\n";
+    for (auto i : meetingList_) {
+        out << "{sponsor:\"" << i.getSponsor() << "\",participator:\""
+            << i.getParticipator() << "\",sdate:" << Date::dateToString(i.getStartDate())
+            << "\",edate:\"" << Date::dateToString(i.getEndDate())
+            << "\",title:\"" << i.getTitle() << "\"}\n";
+        }
+        out.close();
+        return true;
+    }
+    return false;
 }

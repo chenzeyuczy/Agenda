@@ -19,7 +19,7 @@ void AgendaUI::startAgenda() {
   if (userName_.empty()) {
     cout << "-------------------- Agenda -----------------------\n"
          << "Action :\n"
-         << "l   - log in Agendaby user name and password\n"
+         << "l   - log in Agenda by user name and password\n"
          << "r   - register an Agenda account\n"
          << "q   - quit Agenda\n"
          << "---------------------------------------------------\n\n";
