@@ -258,7 +258,7 @@ void AgendaUI::queryMeetingByTitle() {
        << "[query meeting] ";
   std::string meeting;
   cin >> meeting;
-  std::list<Meeting> tem = agendaService_.meetingQuery(meeting);
+  std::list<Meeting> tem = agendaService_.meetingQuery(userName_, meeting);
   if (!tem.empty()) {
     cout << "\nsponsor        participator   "
          << "start time           end time\n";
