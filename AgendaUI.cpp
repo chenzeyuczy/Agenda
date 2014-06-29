@@ -54,13 +54,13 @@ void AgendaUI::getOperation() {
       bool isValid = true;
       cout << "Agenda : ~$ ";
       op = getCmd();
-	  if (op == "l") {
-		  userLogIn();
-	  } else if (op == "r") {
-		  userRegister();
-	  } else if (op == "q"){
-		  quitAgenda();
-	  } else {
+      if (op == "l") {
+          userLogIn();
+      } else if (op == "r") {
+          userRegister();
+      } else if (op == "q") {
+          quitAgenda();
+      } else {
         isValid = false;
       }
       if (isValid) break;
@@ -142,8 +142,8 @@ void AgendaUI::userLogIn() {
   std::string name, password;
   cin >> name >> password;
   if (agendaService_.userLogIn(name, password)) {
-	userName_ = name;
-	userPassword_ = password;
+    userName_ = name;
+    userPassword_ = password;
     cout << "[log in] succeed!\n\n";
   } else {
     cout << "[error] log in fail!\n\n";
@@ -180,13 +180,13 @@ void AgendaUI::userLogOut() {
 }
 
 void AgendaUI::deleteUser() {
-	std::string password;
-	cout << "\nPlease input the password again: ";
-	cin >> password;
+    std::string password;
+    cout << "\nPlease input the password again: ";
+    cin >> password;
   cout <<"\n[delete agenda account] ";
   if (agendaService_.deleteUser(userName_, password)) {
-	userName_.clear();
-	userPassword_.clear();
+    userName_.clear();
+    userPassword_.clear();
     cout << "succeed!\n\n";
   } else {
     cout << "delete agenda account fail!\n\n";
@@ -262,7 +262,7 @@ void AgendaUI::queryMeetingByTitle() {
   if (!tem.empty()) {
     cout << "\nsponsor        participator   "
          << "start time           end time\n";
-	for (auto i: tem)
+    for (auto i : tem)
     cout << std::setiosflags(std::ios::left)
          << std::setw(15) << i.getSponsor()
          << std::setw(15) << i.getParticipator()

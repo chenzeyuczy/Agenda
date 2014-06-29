@@ -12,7 +12,7 @@ Storage::Storage() {
 
 Storage* Storage::getInstance(void) {
   if (!instance_) {
-  	instance_ = new Storage();
+    instance_ = new Storage();
   }
   instance_->readFromFile("agenda.data");
   return instance_;
@@ -33,8 +33,8 @@ void Storage::createUser(const User& user_) {
 std::list<User> Storage::queryUser(std::function<bool(const User&)> filter) {
   std::list<User> v;
   for (auto i : userList_) {
-  	if (filter(i))
-  	  v.push_back(i);
+    if (filter(i))
+      v.push_back(i);
   }
   return v;
 }
@@ -42,10 +42,10 @@ std::list<User> Storage::queryUser(std::function<bool(const User&)> filter) {
 int Storage::updateUser(std::function<bool(const User&)> filter, std::function<void(User&)> switcher) {
   int result = 0;
   for (auto i : userList_) {
-  	if (filter(i)) {
+    if (filter(i)) {
       switcher(i);
-  	  result++;
-  	}
+      result++;
+    }
   }
   return result;
 }
@@ -53,10 +53,10 @@ int Storage::updateUser(std::function<bool(const User&)> filter, std::function<v
 int Storage::deleteUser(std::function<bool(const User&)> filter) {
   int result = 0;
   for (auto i = userList_.begin(); i != userList_.end(); ++i) {
-  	if (filter(*i)) {
-  	  userList_.erase(i);
-  	  result++;
-  	}
+    if (filter(*i)) {
+      userList_.erase(i);
+      result++;
+    }
   }
   return result;
 }
@@ -68,8 +68,8 @@ void Storage::createMeeting(const Meeting& meeting_) {
 std::list<Meeting> Storage::queryMeeting(std::function<bool(const Meeting&)> filter) {
   std::list<Meeting> v;
   for (auto i : meetingList_) {
-  	if (filter(i))
-  	  v.push_back(i);
+    if (filter(i))
+      v.push_back(i);
   }
   return v;
 }
@@ -77,10 +77,10 @@ std::list<Meeting> Storage::queryMeeting(std::function<bool(const Meeting&)> fil
 int Storage::updateMeeting(std::function<bool(const Meeting&)> filter, std::function<void(Meeting&)> switcher) {
   int result = 0;
   for (auto i : meetingList_) {
-  	if (filter(i)) {
+    if (filter(i)) {
       switcher(i);
-  	  result++;
-  	}
+      result++;
+    }
   }
   return result;
 }
@@ -88,10 +88,10 @@ int Storage::updateMeeting(std::function<bool(const Meeting&)> filter, std::func
 int Storage::deleteMeeting(std::function<bool(const Meeting&)> filter) {
   int result = 0;
   for (auto i = meetingList_.begin(); i != meetingList_.end(); ++i) {
-  	if (filter(*i)) {
-  	  meetingList_.erase(i);
-  	  result++;
-  	}
+    if (filter(*i)) {
+      meetingList_.erase(i);
+      result++;
+    }
   }
   return result;
 }

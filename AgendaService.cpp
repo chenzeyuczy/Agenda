@@ -1,7 +1,7 @@
 #include "AgendaService.h"
 
 bool stringValid(std::string str) {
-    for (auto i: str) {
+    for (auto i : str) {
         if (!(i >= '0' && i <= '9' || i >= 'a' && i <= 'z' || i>= 'A' && i <= 'Z'))
             return false;
     }
@@ -9,7 +9,7 @@ bool stringValid(std::string str) {
 }
 
 bool phoneValid(std::string phone) {
-    for (auto i: phone) {
+    for (auto i : phone) {
         if (i < '0' || i > '9')
             return false;
     }
@@ -64,7 +64,7 @@ bool AgendaService::userLogIn(std::string userName, std::string password) {
     if (userList.empty()) {
         return false;
     }
-    return false;
+    return true;
 }
 
 bool AgendaService::userRegister(std::string userName, std::string password,
@@ -99,14 +99,14 @@ std::list<User> AgendaService::listAllUsers(void) {
 
 
 bool AgendaService::createMeeting(std::string userName, std::string title,
-	std::string participator,
-	std::string startDate, std::string endDate) {
-	if (meetingValid(userName, participator, title, startDate, endDate)) {
-		storage_->createMeeting(Meeting(userName, participator,
-			Date::stringToDate(startDate), Date::stringToDate(endDate), title));
-		return true;
-	}
-	return false;
+    std::string participator,
+    std::string startDate, std::string endDate) {
+    if (meetingValid(userName, participator, title, startDate, endDate)) {
+        storage_->createMeeting(Meeting(userName, participator,
+            Date::stringToDate(startDate), Date::stringToDate(endDate), title));
+        return true;
+    }
+    return false;
 }
 
 std::list<Meeting> AgendaService::meetingQuery(std::string userName, std::string title) {
@@ -145,7 +145,7 @@ std::list<Meeting> AgendaService::listAllSponsorMeetings(std::string userName) {
 
 std::list<Meeting> AgendaService::listAllParticipateMeetings(std::string userName) {
     return storage_->queryMeeting([&](const Meeting& meeting) {
-	return (meeting.getParticipator() == userName);
+    return (meeting.getParticipator() == userName);
     });
 }
 
