@@ -1,4 +1,4 @@
-all : agenda install
+all : agenda clean
 
 agenda : Date.o User.o Meeting.o Storage.o AgendaService.o AgendaUI.o \
 	     Agenda.o
@@ -27,4 +27,4 @@ Agenda.o : Agenda.cpp
 	g++ --std=c++11 -c Agenda.cpp
 
 clean :
-	rm *.o *~ agenda
+	rm *.o
