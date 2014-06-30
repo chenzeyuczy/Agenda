@@ -54,7 +54,8 @@ int Storage::deleteUser(std::function<bool(const User&)> filter) {
   int result = 0;
   for (auto i = userList_.begin(); i != userList_.end(); ++i) {
     if (filter(*i)) {
-      userList_.erase(i);
+      auto tem = i--;
+      userList_.erase(tem);
       result++;
     }
   }
@@ -89,7 +90,8 @@ int Storage::deleteMeeting(std::function<bool(const Meeting&)> filter) {
   int result = 0;
   for (auto i = meetingList_.begin(); i != meetingList_.end(); ++i) {
     if (filter(*i)) {
-      meetingList_.erase(i);
+      auto tem = i--;
+      meetingList_.erase(tem);
       result++;
     }
   }

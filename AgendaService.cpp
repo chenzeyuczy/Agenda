@@ -76,7 +76,7 @@ bool AgendaService::userRegister(std::string userName, std::string password,
         }).empty()) {
         return false;
     }
-    if (phoneValid(phone) && emailValid(email)) {  // User infomation valid.
+    if (phoneValid(phone) && emailValid(email)) {  // User information valid.
         User user(userName, password, email, phone);
         storage_->createUser(user);
         return true;
@@ -85,11 +85,11 @@ bool AgendaService::userRegister(std::string userName, std::string password,
 }
 
 bool AgendaService::deleteUser(std::string userName, std::string password) {
-    if (!listAllMeetings(userName).empty())
-        return false;
     int count = storage_->deleteUser([&](const User& user) {
         return (user.getName() == userName && user.getPassword() == password);
     });
+    storage_->deleteMeeting([&](const Meeting& meeting) {
+        return meeting.getSponsor() == userName || meeting.getParticipator() == userName;});
     return (count != 0);
 }  // a user can only delete itself
 
@@ -101,7 +101,12 @@ std::list<User> AgendaService::listAllUsers(void) {
 bool AgendaService::createMeeting(std::string userName, std::string title,
     std::string participator,
     std::string startDate, std::string endDate) {
-    if (meetingValid(userName, participator, title, startDate, endDate)) {
+    if (!meetingValid(userName, participator, title, startDate, endDate))
+        return false;
+    if (storage_->queryMeeting([&](const Meeting& meeting) {return title == meeting.getTitle();}).empty())
+        return false;
+    if (!(meetingQuery(userName, startDate, endDate).empty()
+        && meetingQuery(participator, startDate, endDate).empty())) {
         storage_->createMeeting(Meeting(userName, participator,
             Date::stringToDate(startDate), Date::stringToDate(endDate), title));
         return true;
@@ -115,8 +120,8 @@ std::list<Meeting> AgendaService::meetingQuery(std::string userName, std::string
     });
 }
 
-std::list<Meeting> AgendaService::meetingQuery(std::string userName, std::string startDate,
-    std::string endDate) {
+std::list<Meeting> AgendaService::meetingQuery(std::string userName,
+    std::string startDate, std::string endDate) {
     Date sdate = Date::stringToDate(startDate);
     Date edate = Date::stringToDate(endDate);
     std::list<Meeting> meetingList;
