@@ -1,4 +1,4 @@
-﻿#include "Storage.h"
+﻿# include "Storage.h"
 #include<fstream>
 
 Storage *Storage::instance_ = nullptr;
@@ -13,13 +13,14 @@ Storage::Storage() {
 Storage* Storage::getInstance(void) {
   if (!instance_) {
     instance_ = new Storage();
+    instance_->readFromFile("agenda.data");
   }
-  instance_->readFromFile("agenda.data");
   return instance_;
 }
 
 Storage::~Storage() {
   writeToFile("agenda.data");
+  instance_ = nullptr;
 }
 
 bool Storage::sync(void) {
@@ -41,9 +42,10 @@ std::list<User> Storage::queryUser(std::function<bool(const User&)> filter) {
 
 int Storage::updateUser(std::function<bool(const User&)> filter, std::function<void(User&)> switcher) {
   int result = 0;
-  for (auto i : userList_) {
-    if (filter(i)) {
-      switcher(i);
+  std::list<User>::iterator it;
+  for (it = userList_.begin(); it != userList_.end(); it++) {
+    if (filter(*it)) {
+      switcher(*it);
       result++;
     }
   }
@@ -77,9 +79,10 @@ std::list<Meeting> Storage::queryMeeting(std::function<bool(const Meeting&)> fil
 
 int Storage::updateMeeting(std::function<bool(const Meeting&)> filter, std::function<void(Meeting&)> switcher) {
   int result = 0;
-  for (auto i : meetingList_) {
-    if (filter(i)) {
-      switcher(i);
+  std::list<Meeting>::iterator it;
+  for (it = meetingList_.begin(); it != meetingList_.end(); it++) {
+    if (filter(*it)) {
+      switcher(*it);
       result++;
     }
   }
@@ -159,8 +162,9 @@ bool Storage::writeToFile(const char *filename) {
     }
     out << "{collection:\"Meeting\",total:" << meetingList_.size() << "}\n";
     for (auto i : meetingList_) {
-        out << "{sponsor:\"" << i.getSponsor() << "\",participator:\""
-            << i.getParticipator() << "\",sdate:" << Date::dateToString(i.getStartDate())
+        out << "{sponsor:\"" << i.getSponsor()
+            << "\",participator:\"" << i.getParticipator()
+            << "\",sdate:" << Date::dateToString(i.getStartDate())
             << "\",edate:\"" << Date::dateToString(i.getEndDate())
             << "\",title:\"" << i.getTitle() << "\"}\n";
         }

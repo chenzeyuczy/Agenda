@@ -116,7 +116,8 @@ bool AgendaService::createMeeting(std::string userName, std::string title,
 
 std::list<Meeting> AgendaService::meetingQuery(std::string userName, std::string title) {
     return storage_->queryMeeting([&](const Meeting& meeting) {
-        return (meeting.getSponsor() == userName || meeting.getParticipator() == userName) && meeting.getTitle() == title;
+        return (meeting.getSponsor() == userName || meeting.getParticipator() == userName)
+            && meeting.getTitle() == title;
     });
 }
 

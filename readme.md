@@ -4,4 +4,4 @@ This is the project of the software engineering training for freshmen in school 
 
 New features of C++11 have benn added into it.
 
-Still under development.
+Some extend functions have not finished yet.
