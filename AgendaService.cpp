@@ -1,8 +1,8 @@
-#include "AgendaService.h"
+#include "AgendaServi   ce.h"
 
 bool stringValid(std::string str) {
     for (auto i : str) {
-        if (!(i >= '0' && i <= '9' || i >= 'a' && i <= 'z' || i>= 'A' && i <= 'Z'))
+        if (!((i >= '0' && i <= '9') || (i >= 'a' && i <= 'z') || (i>= 'A' && i <= 'Z')))
             return false;
     }
     return true;
@@ -45,16 +45,13 @@ bool meetingValid(std::string userName, std::string participator,
     return true;
 }  // Check whether the meeting is valid.
 
-int AgendaService::serviceRunning_ = 0;
-
 AgendaService::AgendaService() {
-  serviceRunning_++;
-  storage_ = storage_->getInstance();
+    startAgenda();
 }
 
 AgendaService::~AgendaService() {
-  serviceRunning_--;
-  delete storage_;
+    quitAgenda();
+    delete storage_;
 }
 
 bool AgendaService::userLogIn(std::string userName, std::string password) {
@@ -93,20 +90,57 @@ bool AgendaService::deleteUser(std::string userName, std::string password) {
     return (count != 0);
 }  // a user can only delete itself
 
+bool AgendaService::setPassword(std::string userName, std::string password) {
+    if (!stringValid(password))
+        return false;
+    return storage_->updateUser(
+        [&](const User& user) {return user.getName() == userName;},
+        [&](User& user) {user.setPassword(password);}
+    );
+}
+
+bool AgendaService::setEmail(std::string userName, std::string email) {
+    if (!emailValid(email))
+        return false;
+    return storage_->updateUser(
+        [&](const User& user) {return user.getName() == userName;},
+        [&](User& user) {user.setEmail(email);}
+    );
+}
+
+bool AgendaService::setPhone(std::string userName, std::string phone) {
+    if (!phoneValid(phone))
+        return false;
+    return storage_->updateUser(
+        [&](const User& user) {return user.getName() == userName;},
+        [&](User& user) {user.setPhone(phone);}
+    );
+}
+
 std::list<User> AgendaService::listAllUsers(void) {
     return storage_->queryUser([](const User& user) {return true;});
 }
 
-
 bool AgendaService::createMeeting(std::string userName, std::string title,
     std::string participator,
     std::string startDate, std::string endDate) {
+    Date sdate = Date::stringToDate(startDate), edate = Date::stringToDate(endDate);
     if (!meetingValid(userName, participator, title, startDate, endDate))
+        return false;
+    if (storage_->queryUser([&](const User& user) {return user.getName() == participator;}).empty())
         return false;
     if (storage_->queryMeeting([&](const Meeting& meeting) {return title == meeting.getTitle();}).empty())
         return false;
-    if (!(meetingQuery(userName, startDate, endDate).empty()
-        && meetingQuery(participator, startDate, endDate).empty())) {
+    if (storage_->queryMeeting([&](const Meeting& meeting) {
+        return (meeting.getSponsor() == userName || meeting.getParticipator() == userName)
+            && (meeting.getStartDate() > sdate && meeting.getStartDate() < edate)
+            && (meeting.getEndDate() > sdate && meeting.getEndDate() < edate);
+        }).empty()
+        && storage_->queryMeeting([&](const Meeting& meeting) {
+        return (meeting.getSponsor() == participator || meeting.getParticipator() == participator)
+            && (meeting.getStartDate() > sdate && meeting.getStartDate() < edate)
+            && (meeting.getEndDate() > sdate && meeting.getEndDate() < edate);
+        }).empty()) {
         storage_->createMeeting(Meeting(userName, participator,
             Date::stringToDate(startDate), Date::stringToDate(endDate), title));
         return true;
@@ -132,8 +166,8 @@ std::list<Meeting> AgendaService::meetingQuery(std::string userName,
         return meetingList;
     return storage_->queryMeeting([&](const Meeting& meeting) {
         return (meeting.getSponsor() == userName || meeting.getParticipator() == userName)
-            && meeting.getStartDate() >= sdate
-            && meeting.getEndDate() <= edate;
+            && (((meeting.getStartDate() >= sdate) && (meeting.getStartDate() <= edate))
+                || ((meeting.getEndDate() >= sdate) && (meeting.getEndDate() <= edate)));
     });
 }
 
@@ -171,7 +205,7 @@ bool AgendaService::deleteAllMeetings(std::string userName) {
 }
 
 void AgendaService::startAgenda(void) {
-    storage_->getInstance();
+    storage_ = Storage::getInstance();
 }
 
 void AgendaService::quitAgenda(void) {

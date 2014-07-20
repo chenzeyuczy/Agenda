@@ -337,12 +337,10 @@ void AgendaUI::setPassword() {
        << "[set password] ";
   std::string password;
   cin >> password;
-  /*
   if (agendaService_.setPassword(userName_, password))
     cout << "[set password] succeed!\n\n";
   else
     cout << "[error] set password fail!\n\n";
-  */
   startAgenda();
   getOperation();
 }  // 修改密码
@@ -352,12 +350,10 @@ void AgendaUI::setEmail() {
        << "[set email] ";
   std::string email;
   cin >> email;
-  /*
   if (agendaService_.setEmail(userName_, email))
     cout << "[set email] succeed!\n\n";
   else
     cout << "[error] set email fail!\n\n";
-  */
   startAgenda();
   getOperation();
 }  // 修改邮箱
@@ -367,12 +363,10 @@ void AgendaUI::setPhone() {
        << "[set phone] ";
   std::string phone;
   cin >> phone;
-  /*
   if (agendaService_.setPhone(userName_, phone))
     cout << "[set phone] succeed!\n\n";
   else
     cout << "[error] set phone fail!\n\n";
-  */
   startAgenda();
   getOperation();
 }  // 修改电话
