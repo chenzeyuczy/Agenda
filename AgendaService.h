@@ -11,7 +11,7 @@ class AgendaService {
   ~AgendaService();
   bool userLogIn(std::string userName, std::string password);
   bool userRegister(std::string userName, std::string password,
-                    std::string email, std::string phone);
+    std::string email, std::string phone);
   bool deleteUser(std::string userName, std::string password);
     // a user can only delete itself
   std::list<User> listAllUsers(void);
@@ -24,15 +24,17 @@ class AgendaService {
                      std::string startDate, std::string endDate);
   std::list<Meeting> meetingQuery(std::string userName, std::string title);
   std::list<Meeting> meetingQuery(std::string userName, std::string startDate,
-                                  std::string endDate);
+    std::string endDate);
   std::list<Meeting> listAllMeetings(std::string userName);
   std::list<Meeting> listAllSponsorMeetings(std::string userName);
   std::list<Meeting> listAllParticipateMeetings(std::string userName);
   bool deleteMeeting(std::string userName, std::string title);
   bool deleteAllMeetings(std::string userName);
-  bool setParticipator(std::string userName, std::string participator);
-  bool setStartDate(std::string userName, std::string startDate);
-  bool setEndDate(std::string userName, std::string endDate);
+  bool setParticipator(std::string userName,
+    std::string title, std::string participator);
+  bool setStartDate(std::string userName, std::string title, 
+    std::string startDate);
+  bool setEndDate(std::string userName, std::string title, std::string endDate);
 
   void startAgenda(void);
   void quitAgenda(void);

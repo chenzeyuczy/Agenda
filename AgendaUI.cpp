@@ -228,8 +228,7 @@ void AgendaUI::createMeeting() {
 
 void AgendaUI::listAllMeetings() {
   cout << "\n[list all meetings]\n";
-  std::list<Meeting> tem = agendaService_.listAllMeetings
-    (userName_);
+  std::list<Meeting> tem = agendaService_.listAllMeetings(userName_);
   printMeetings(tem);
   startAgenda();
   getOperation();
@@ -237,8 +236,7 @@ void AgendaUI::listAllMeetings() {
 
 void AgendaUI::listAllSponsorMeetings() {
   cout << "\n[list all sponsor meetings]\n";
-  std::list<Meeting> tem = agendaService_.listAllSponsorMeetings
-    (userName_);
+  std::list<Meeting> tem = agendaService_.listAllSponsorMeetings(userName_);
   printMeetings(tem);
   startAgenda();
   getOperation();
@@ -246,8 +244,7 @@ void AgendaUI::listAllSponsorMeetings() {
 
 void AgendaUI::listAllParticipateMeetings() {
   cout << "\n[list all participate meetings]\n";
-  std::list<Meeting> tem =
-    agendaService_.listAllParticipateMeetings(userName_);
+  std::list<Meeting> tem = agendaService_.listAllParticipateMeetings(userName_);
   printMeetings(tem);
   startAgenda();
   getOperation();
@@ -376,14 +373,10 @@ void AgendaUI::setParticipator() {
        << "[set participator] ";
   std::string title, participator;
   cin >> title >> participator;
-  /*
-  if (agendaService_.meetingQuery(title) == NULL)
-    cout << "[error] meeting doesn't exist!\n";
-  if (agendaService_.setParticipator(title, participator))
+  if (agendaService_.setParticipator(userName_, title, participator))
     cout << "[set participator] succeed!\n\n";
   else
     cout << "[error] set participator fail!\n\n";
-  */
   startAgenda();
   getOperation();
 }  // 修改参与者
@@ -393,14 +386,10 @@ void AgendaUI::setStartDate() {
        << "[set start date] ";
   std::string title, stime;
   cin >> title >> stime;
-  /*
-  if (agendaService_.meetingQuery(title) == NULL)
-    cout << "[error] meeting doesn't exist!\n";
-  if (agendaService_.setStartDate(title, stime))
+  if (agendaService_.setStartDate(userName_, title, stime))
     cout << "[set start date] succeed!\n\n";
   else
     cout << "[error] set start date fail!\n\n";
-  */
   startAgenda();
   getOperation();
 }  // 修改起始时间
@@ -410,14 +399,10 @@ void AgendaUI::setEndDate() {
        << "[set end date] ";
   std::string title, etime;
   cin >> title >> etime;
-  /*
-  if (agendaService_.meetingQuery(title) == NULL)
-    cout << "[error] meeting doesn't exist!\n";
-  if (agendaService_.setStartDate(title, etime))
+  if (agendaService_.setStartDate(userName_, title, etime))
     cout << "[set end date] succeed!\n\n";
   else
     cout << "[error] set end date fail!\n\n";
-  */
   startAgenda();
   getOperation();
 }  // 修改终止时间

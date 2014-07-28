@@ -1,4 +1,4 @@
-#include "AgendaServi   ce.h"
+#include "AgendaService.h"
 
 bool stringValid(std::string str) {
     for (auto i : str) {
@@ -202,6 +202,85 @@ bool AgendaService::deleteAllMeetings(std::string userName) {
         return meeting.getSponsor() == userName;
     });
     return (count != 0);
+}
+
+bool AgendaService::setParticipator(std::string userName, std::string title, std::string participator) {
+    std::list<Meeting> tem = meetingQuery(userName, title);
+    if (tem.empty())
+        return false;
+    std::string sdate, edate;
+    sdate = Date::dateToString(tem.front().getStartDate());
+    edate = Date::dateToString(tem.front().getEndDate());
+    if (storage_->queryUser([&](const User& user)
+        {return user.getName() == participator;}
+    ).empty())
+        return false;
+    // Judege whether the participator exists.
+    if (!meetingQuery(participator, title).empty())
+        return false;
+    // Judge whether title conflict exists.
+    if (!meetingQuery(participator, sdate, edate).empty())
+        return false;
+    // Judege whether time conflict exists.
+    return storage_->updateMeeting(
+        [&](const Meeting& meeting) {
+            return meeting.getSponsor() == userName && meeting.getTitle() == title;},
+        [&](Meeting& meeting) {meeting.setParticipator(participator);}
+    );
+}
+
+bool AgendaService::setStartDate(std::string userName, std::string title, std::string startDate) {
+    std::list<Meeting> tem = meetingQuery(userName, title);
+    if (tem.empty())
+        return false;
+    Meeting meet = tem.front();
+    std::string participator = meet.getParticipator();
+    Date sdate = Date::stringToDate(startDate), edate = meet.getEndDate();
+    if (sdate >= edate)
+        return false;
+    deleteMeeting(userName, title);
+    if (storage_->queryMeeting([&](const Meeting& meeting) {
+        return (meeting.getSponsor() == userName
+            || meeting.getSponsor() == participator
+            || meeting.getParticipator() == userName
+            || meeting.getParticipator() == participator)
+            && meeting.getStartDate() > sdate 
+            && meeting.getEndDate() < edate;
+        }).empty()) {
+        meet.setStartDate(sdate);
+        storage_->createMeeting(meet);
+        return true;
+    } else {
+        storage_->createMeeting(meet);
+        return false;
+    }
+}
+
+bool AgendaService::setEndDate(std::string userName, std::string title, std::string endDate) {
+    std::list<Meeting> tem = meetingQuery(userName, title);
+    if (tem.empty())
+        return false;
+    Meeting meet = tem.front();
+    std::string participator = meet.getParticipator();
+    Date sdate = meet.getStartDate(), edate = Date::stringToDate(endDate);
+    if (sdate >= edate)
+        return false;
+    deleteMeeting(userName, title);
+    if (storage_->queryMeeting([&](const Meeting& meeting) {
+        return (meeting.getSponsor() == userName
+            || meeting.getSponsor() == participator
+            || meeting.getParticipator() == userName
+            || meeting.getParticipator() == participator)
+            && meeting.getStartDate() > sdate 
+            && meeting.getEndDate() < edate;
+        }).empty()) {
+        meet.setEndDate(edate);
+        storage_->createMeeting(meet);
+        return true;
+    } else {
+        storage_->createMeeting(meet);
+        return false;
+    }
 }
 
 void AgendaService::startAgenda(void) {
