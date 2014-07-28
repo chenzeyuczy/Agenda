@@ -1,9 +1,8 @@
-#include "AgendaController.h"
+#include "AgendaUI.h"
 
-int main(int argc, char *argv[]) {
-  AgendaController agendaController;
+AgendaUI acc;
 
-  agendaController.getOperation();
-
+int main() {
+  acc.getOperation();
   return 0;
 }

@@ -1,21 +1,25 @@
 // Copyright [2013] chenzy
-#include "AgendaController.h"
+
+#include "AgendaUI.h"
 #include <iostream>
 #include <iomanip>
+
 using std::cin;
 using std::cout;
 using std::endl;
 
-AgendaController::AgendaController() {
-  currentUser_ = NULL;
+AgendaUI::AgendaUI() {
+  userName_.clear();
+  userPassword_.clear();
   agendaService_.startAgenda();
   startAgenda();
 }
-void AgendaController::startAgenda() {
-  if (currentUser_ == NULL) {
+
+void AgendaUI::startAgenda() {
+  if (userName_.empty()) {
     cout << "-------------------- Agenda -----------------------\n"
          << "Action :\n"
-         << "l   - log in Agendaby user name and password\n"
+         << "l   - log in Agenda by user name and password\n"
          << "r   - register an Agenda account\n"
          << "q   - quit Agenda\n"
          << "---------------------------------------------------\n\n";
@@ -42,38 +46,41 @@ void AgendaController::startAgenda() {
          << "---------------------------------------------------\n\n";
   }
 }  // 开始菜单
-void AgendaController::getOperation() {
-  if (currentUser_ == NULL) {
+
+void AgendaUI::getOperation() {
+  std::string op;
+  if (userName_.empty()) {
     while (1) {
       bool isValid = true;
-      char op;
       cout << "Agenda : ~$ ";
-      cin >> op;
-      switch (op) {
-      case 'l':
-        userLogIn();
-        break;
-      case 'r':
-        userRegister();
-        break;
-      case 'q':
-        quitAgenda();
-        break;
-      default:
+      op = getCmd();
+      if (op == "l") {
+          userLogIn();
+      } else if (op == "r") {
+          userRegister();
+      } else if (op == "q") {
+          quitAgenda();
+      } else {
         isValid = false;
       }
       if (isValid) break;
     }
   } else {
     while (1) {
-      cout << "Agenda@" << currentUser_->getName() << " : # ";
-      std::string op;
-      cin >> op;
+      cout << "Agenda@" << userName_ << " : # ";
+      op = getCmd();
       if (executeOperation(op)) break;
     }
   }
 }  // 获取操作指令
-bool AgendaController::executeOperation(std::string op) {
+
+std::string AgendaUI::getCmd() {
+    std::string temp;
+    cin >> temp;
+    return temp;
+}  // Get the input.
+
+bool AgendaUI::executeOperation(std::string op) {
   if (op == "o") {
     userLogOut();
     return true;
@@ -128,13 +135,15 @@ bool AgendaController::executeOperation(std::string op) {
   }
   return false;
 }
-void AgendaController::userLogIn() {
+
+void AgendaUI::userLogIn() {
   cout << "\n[log in] [user name] [password]\n"
        << "[log in] ";
   std::string name, password;
   cin >> name >> password;
-  currentUser_ = agendaService_.userLogIn(name, password);
-  if (currentUser_ != NULL) {
+  if (agendaService_.userLogIn(name, password)) {
+    userName_ = name;
+    userPassword_ = password;
     cout << "[log in] succeed!\n\n";
   } else {
     cout << "[error] log in fail!\n\n";
@@ -142,7 +151,8 @@ void AgendaController::userLogIn() {
   startAgenda();
   getOperation();
 }
-void AgendaController::userRegister() {
+
+void AgendaUI::userRegister() {
   cout << "\n[register] [user name] [password] [email] [phone]\n"
        << "[register] ";
   std::string name, password, email, phone;
@@ -155,20 +165,28 @@ void AgendaController::userRegister() {
   startAgenda();
   getOperation();
 }
-void AgendaController::quitAgenda() {
+
+void AgendaUI::quitAgenda() {
   agendaService_.quitAgenda();
   cout << "[quit agenda] succeed!\n";
 }
-void AgendaController::userLogOut() {
-  currentUser_ = NULL;
+
+void AgendaUI::userLogOut() {
+  userName_.clear();
+  userPassword_.clear();
   agendaService_.quitAgenda();
   startAgenda();
   getOperation();
 }
-void AgendaController::deleteUser() {
+
+void AgendaUI::deleteUser() {
+    std::string password;
+    cout << "\nPlease input the password again: ";
+    cin >> password;
   cout <<"\n[delete agenda account] ";
-  if (agendaService_.deleteUser(*currentUser_)) {
-    currentUser_ = NULL;
+  if (agendaService_.deleteUser(userName_, password)) {
+    userName_.clear();
+    userPassword_.clear();
     cout << "succeed!\n\n";
   } else {
     cout << "delete agenda account fail!\n\n";
@@ -176,7 +194,8 @@ void AgendaController::deleteUser() {
   startAgenda();
   getOperation();
 }  // 删除账户
-void AgendaController::listAllUsers() {
+
+void AgendaUI::listAllUsers() {
   cout << "\n[list all users]\n\n"
        << "name    email          phone\n";
   std::list<User> tem = agendaService_.listAllUsers();
@@ -189,14 +208,15 @@ void AgendaController::listAllUsers() {
   startAgenda();
   getOperation();
 }
-void AgendaController::createMeeting() {
+
+void AgendaUI::createMeeting() {
   cout << "[create meeting] [title] [participator] "
        << "[start time(yyyy-mm-dd/hh::mm)] "
        << "[end time](yyyy-mm-dd/hh:mm)\n"
        << "[create meeting] ";
   std::string title, participator, stime, etime;
   cin >> title >> participator >> stime >> etime;
-  if (agendaService_.createMeeting(currentUser_->getName(), title,
+  if (agendaService_.createMeeting(userName_, title,
     participator, stime, etime)) {
     cout << "[create meeting] succeed!\n\n";
   } else {
@@ -205,51 +225,54 @@ void AgendaController::createMeeting() {
   startAgenda();
   getOperation();
 }  // 添加会议
-void AgendaController::listAllMeetings() {
+
+void AgendaUI::listAllMeetings() {
   cout << "\n[list all meetings]\n";
-  std::list<Meeting> tem = agendaService_.listAllMeetings
-    (currentUser_->getName());
+  std::list<Meeting> tem = agendaService_.listAllMeetings(userName_);
   printMeetings(tem);
   startAgenda();
   getOperation();
 }
-void AgendaController::listAllSponsorMeetings() {
+
+void AgendaUI::listAllSponsorMeetings() {
   cout << "\n[list all sponsor meetings]\n";
-  std::list<Meeting> tem = agendaService_.listAllSponsorMeetings
-    (currentUser_->getName());
+  std::list<Meeting> tem = agendaService_.listAllSponsorMeetings(userName_);
   printMeetings(tem);
   startAgenda();
   getOperation();
 }
-void AgendaController::listAllParticipateMeetings() {
+
+void AgendaUI::listAllParticipateMeetings() {
   cout << "\n[list all participate meetings]\n";
-  std::list<Meeting> tem =
-    agendaService_.listAllParticipateMeetings(currentUser_->getName());
+  std::list<Meeting> tem = agendaService_.listAllParticipateMeetings(userName_);
   printMeetings(tem);
   startAgenda();
   getOperation();
 }
-void AgendaController::queryMeetingByTitle() {
+
+void AgendaUI::queryMeetingByTitle() {
   cout << "\n[query meeting] [title]:\n"
        << "[query meeting] ";
   std::string meeting;
   cin >> meeting;
-  Meeting* tem = agendaService_.meetingQuery(meeting);
-  if (tem != NULL) {
+  std::list<Meeting> tem = agendaService_.meetingQuery(userName_, meeting);
+  if (!tem.empty()) {
     cout << "\nsponsor        participator   "
          << "start time           end time\n";
+    for (auto i : tem)
     cout << std::setiosflags(std::ios::left)
-         << std::setw(15) << tem->getSponsor()
-         << std::setw(15) << tem->getParticipator()
-         << std::setw(20) << Date::dateToString(tem->getStartDate())
-         << Date::dateToString(tem->getEndDate()) << endl << endl;
+         << std::setw(15) << i.getSponsor()
+         << std::setw(15) << i.getParticipator()
+         << std::setw(20) << Date::dateToString(i.getStartDate())
+         << Date::dateToString(i.getEndDate()) << endl << endl;
   } else {
     cout << "\n[error] query meeting fail!\n\n";
   }  // 会议名不存在
   startAgenda();
   getOperation();
 }
-void AgendaController::queryMeetingByTimeInterval() {
+
+void AgendaUI::queryMeetingByTimeInterval() {
   cout << "\n[query meetings] [start time(yyyy- mm-dd/hh:mm)] "
        << "[end time(yyyy-mm-dd/hh:mm)]\n"
        << "[query meetings] ";
@@ -261,18 +284,19 @@ void AgendaController::queryMeetingByTimeInterval() {
     cout << "\n[error] query meeting fail!\n\n";
   } else {
     std::list<Meeting> tem = agendaService_.meetingQuery
-      (currentUser_->getName(), stime, etime);
+      (userName_, stime, etime);
       // What if not existed?
     printMeetings(tem);
   }
   startAgenda();
   getOperation();
 }
-void AgendaController::deleteMeetingByTitle() {
+
+void AgendaUI::deleteMeetingByTitle() {
   cout << "\n[delete meeting] [title]\n" << "[delete meeting] ";
   std::string title;
   cin >> title;
-  if (agendaService_.deleteMeeting(currentUser_->getName(), title)) {
+  if (agendaService_.deleteMeeting(userName_, title)) {
     cout << "\n[delete meeting by title] succeed!\n\n";
   } else {
     cout << "\n[error] delete meeting fail!\n\n";
@@ -280,8 +304,9 @@ void AgendaController::deleteMeetingByTitle() {
   startAgenda();
   getOperation();
 }
-void AgendaController::deleteAllMeetings() {
-  if (agendaService_.deleteAllMeetings(currentUser_->getName())) {
+
+void AgendaUI::deleteAllMeetings() {
+  if (agendaService_.deleteAllMeetings(userName_)) {
     cout << "\n[delete all meetings] succeed!\n\n";
   } else {
     cout << "\n[error] delete meetings fail!\n\n";
@@ -289,7 +314,8 @@ void AgendaController::deleteAllMeetings() {
   startAgenda();
   getOperation();
 }
-void AgendaController::printMeetings(std::list<Meeting> meetings) {
+
+void AgendaUI::printMeetings(std::list<Meeting> meetings) {
   std::list<Meeting>::iterator p;
   cout << "\ntitle          sponsor        participator   "
        << "start time           end time\n";
@@ -302,78 +328,78 @@ void AgendaController::printMeetings(std::list<Meeting> meetings) {
   }
   cout << endl;
 }  // 打印会议列表
-void AgendaController::setPassword() {
+
+void AgendaUI::setPassword() {
   cout << "\n[set password] [new password]\n"
        << "[set password] ";
   std::string password;
   cin >> password;
-  if (agendaService_.setPassword(currentUser_->getName(), password))
+  if (agendaService_.setPassword(userName_, password))
     cout << "[set password] succeed!\n\n";
   else
     cout << "[error] set password fail!\n\n";
   startAgenda();
   getOperation();
 }  // 修改密码
-void AgendaController::setEmail() {
+
+void AgendaUI::setEmail() {
   cout << "\n[set email] [new email]\n"
        << "[set email] ";
   std::string email;
   cin >> email;
-  if (agendaService_.setEmail(currentUser_->getName(), email))
+  if (agendaService_.setEmail(userName_, email))
     cout << "[set email] succeed!\n\n";
   else
     cout << "[error] set email fail!\n\n";
   startAgenda();
   getOperation();
 }  // 修改邮箱
-void AgendaController::setPhone() {
+
+void AgendaUI::setPhone() {
   cout << "\n[set phone] [new phone]\n"
        << "[set phone] ";
   std::string phone;
   cin >> phone;
-  if (agendaService_.setPhone(currentUser_->getName(), phone))
+  if (agendaService_.setPhone(userName_, phone))
     cout << "[set phone] succeed!\n\n";
   else
     cout << "[error] set phone fail!\n\n";
   startAgenda();
   getOperation();
 }  // 修改电话
-void AgendaController::setParticipator() {
+
+void AgendaUI::setParticipator() {
   cout << "\n[set participator] [title] [new participator]\n"
        << "[set participator] ";
   std::string title, participator;
   cin >> title >> participator;
-  if (agendaService_.meetingQuery(title) == NULL)
-    cout << "[error] meeting doesn't exist!\n";
-  if (agendaService_.setParticipator(title, participator))
+  if (agendaService_.setParticipator(userName_, title, participator))
     cout << "[set participator] succeed!\n\n";
   else
     cout << "[error] set participator fail!\n\n";
   startAgenda();
   getOperation();
 }  // 修改参与者
-void AgendaController::setStartDate() {
+
+void AgendaUI::setStartDate() {
   cout << "\n[set start date] [title] [new start date]\n"
        << "[set start date] ";
   std::string title, stime;
   cin >> title >> stime;
-  if (agendaService_.meetingQuery(title) == NULL)
-    cout << "[error] meeting doesn't exist!\n";
-  if (agendaService_.setStartDate(title, stime))
+  if (agendaService_.setStartDate(userName_, title, stime))
     cout << "[set start date] succeed!\n\n";
   else
     cout << "[error] set start date fail!\n\n";
   startAgenda();
   getOperation();
 }  // 修改起始时间
-void AgendaController::setEndDate() {
+
+void AgendaUI::setEndDate() {
   cout << "\n[set end date] [title] [new end date]\n"
        << "[set end date] ";
   std::string title, etime;
   cin >> title >> etime;
-  if (agendaService_.meetingQuery(title) == NULL)
-    cout << "[error] meeting doesn't exist!\n";
-  if (agendaService_.setStartDate(title, etime))
+  if (agendaService_.setStartDate(userName_, title, etime))
     cout << "[set end date] succeed!\n\n";
   else
     cout << "[error] set end date fail!\n\n";

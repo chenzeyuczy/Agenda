@@ -1,12 +1,12 @@
-#ifndef Date_H
-#define Date_H
+#ifndef DATE_H
+#define DATE_H
 
 #include <string>
 
 class Date {
  public:
   Date();
-  Date(int, int, int, int, int);
+  Date(int y, int m, int d, int h, int mi);
   int getYear(void) const;
   void setYear(int year);
   int getMonth(void) const;

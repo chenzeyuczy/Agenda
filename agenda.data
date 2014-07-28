@@ -1,0 +1,4 @@
+{collection:"User",total:2}
+{name:"czy",pwd:"123",email:"123@qq.com",phone:"110"}
+{name:"wxm",pwd:"360",email:"xjp@prc.com",phone:"12345"}
+{collection:"Meeting",total:0}
